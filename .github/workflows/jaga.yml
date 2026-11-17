@@ -4,8 +4,8 @@ name: jaga-supabase
 # Workflow ini menyentuh database tiap hari supaya timer ter-reset,
 # tanpa bergantung pada PC menyala.
 #
-# URL dan key ditulis langsung, bukan lewat Secrets, karena:
-#   - publishable/anon key memang dirancang publik (ada juga di HTML website)
+# URL dan key ditulis langsung, bukan lewat Secrets:
+#   - publishable/anon key memang dirancang publik (juga ada di HTML website)
 #   - tabel mentah dilindungi RLS, hanya RPC security definer yang bisa dipanggil
 # Tidak ada secret key di sini.
 
