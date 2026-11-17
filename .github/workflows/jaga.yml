@@ -4,8 +4,8 @@ name: jaga-supabase
 # Workflow ini menyentuh database tiap hari supaya timer ter-reset,
 # tanpa bergantung pada PC menyala.
 #
-# URL dan key ditulis langsung, bukan lewat Secrets:
-#   - publishable/anon key memang dirancang publik (juga ada di HTML website)
+# URL dan publishable key ditulis langsung, bukan Secrets:
+#   - publishable/anon key memang publik (juga ada di HTML website)
 #   - tabel mentah dilindungi RLS, hanya RPC security definer yang bisa dipanggil
 # Tidak ada secret key di sini.
 
@@ -13,6 +13,8 @@ on:
   schedule:
     - cron: '0 1 * * *'      # 08:00 WIB
   workflow_dispatch:
+  push:
+    branches: [main]
 
 jobs:
   sentuh:
@@ -24,6 +26,9 @@ jobs:
           KEY: sb_publishable_SzSKMC_TzFMKoWKLGPKwdg_6ZZIsnZL
         run: |
           set -euo pipefail
+          # key terpotong = request pasti 401, jadi periksa dulu
+          echo "panjang key: ${#KEY}"
+          [ ${#KEY} -ge 40 ] || { echo 'key tidak utuh'; exit 1; }
           kode=$(curl -s -o /tmp/out.json -w '%{http_code}' \
             "$URL/rest/v1/rpc/dske_tema" \
             -H "apikey: $KEY" -H "Content-Type: application/json" -d '{}')
