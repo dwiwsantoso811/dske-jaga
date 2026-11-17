@@ -1,0 +1,27 @@
+name: jaga-supabase
+
+# Supabase free pause setelah 7 hari tanpa aktivitas.
+# Workflow ini menyentuh database tiap hari supaya tidak pause,
+# tanpa bergantung pada PC menyala.
+
+on:
+  schedule:
+    - cron: '0 1 * * *'      # 08:00 WIB
+  workflow_dispatch:
+
+jobs:
+  sentuh:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Panggil RPC publik
+        env:
+          URL: ${{ secrets.SUPABASE_URL }}
+          KEY: ${{ secrets.SUPABASE_KEY }}
+        run: |
+          set -euo pipefail
+          kode=$(curl -s -o /tmp/out.json -w '%{http_code}' \
+            "$URL/rest/v1/rpc/dske_tema" \
+            -H "apikey: $KEY" -H "Content-Type: application/json" -d '{}')
+          echo "HTTP $kode"
+          head -c 300 /tmp/out.json; echo
+          [ "$kode" = "200" ] || exit 1
