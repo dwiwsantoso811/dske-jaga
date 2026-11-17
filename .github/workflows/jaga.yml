@@ -1,8 +1,13 @@
 name: jaga-supabase
 
-# Supabase free pause setelah 7 hari tanpa aktivitas.
-# Workflow ini menyentuh database tiap hari supaya tidak pause,
+# Supabase free mem-pause project setelah 7 hari tanpa aktivitas.
+# Workflow ini menyentuh database tiap hari supaya timer ter-reset,
 # tanpa bergantung pada PC menyala.
+#
+# URL dan key ditulis langsung, bukan lewat Secrets, karena:
+#   - publishable/anon key memang dirancang publik (ada juga di HTML website)
+#   - tabel mentah dilindungi RLS, hanya RPC security definer yang bisa dipanggil
+# Tidak ada secret key di sini.
 
 on:
   schedule:
@@ -13,10 +18,10 @@ jobs:
   sentuh:
     runs-on: ubuntu-latest
     steps:
-      - name: Panggil RPC publik
+      - name: Panggil RPC publik dske_tema
         env:
-          URL: ${{ secrets.SUPABASE_URL }}
-          KEY: ${{ secrets.SUPABASE_KEY }}
+          URL: https://sjjhmtcnrniyrpldcgdf.supabase.co
+          KEY: sb_publishable_SzSKMC_TzFMKoWKLGPKwdg_6ZZIsnZL
         run: |
           set -euo pipefail
           kode=$(curl -s -o /tmp/out.json -w '%{http_code}' \
