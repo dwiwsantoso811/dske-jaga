@@ -2,32 +2,18 @@
 
 Penjaga Supabase DSKE.
 
-Supabase free mem-pause project setelah 7 hari tanpa aktivitas. Repo ini
-menjalankan satu request HTTP tiap hari lewat GitHub Actions sehingga timer
-7 hari selalu ter-reset — tidak bergantung pada PC menyala.
+Supabase free mem-pause project setelah **7 hari** tanpa aktivitas. Repo ini
+memanggil satu request HTTP tiap hari lewat GitHub Actions sehingga timer
+selalu ter-reset — tidak bergantung pada PC menyala.
 
-## Isi
+- Workflow: `.github/workflows/jaga.yml`
+- Jadwal: `0 1 * * *` (08:00 WIB)
+- Yang dipanggil: RPC `dske_tema` (publik, tanpa data sensitif)
+- Uji manual: tab **Actions** -> `jaga-supabase` -> **Run workflow**
 
-- `.github/workflows/jaga.yml` — cron harian 08:00 WIB, memanggil RPC `dske_tema`
-  (fungsi publik yang aman, tanpa data sensitif).
+URL dan publishable key ditulis langsung di workflow, bukan Secrets, karena
+keduanya memang publik (publishable key juga ada di HTML website). Tabel
+mentah dilindungi RLS; hanya RPC `security definer` yang bisa dipanggil.
 
-## Rahasia yang diperlukan
-
-Setelan repo → Secrets and variables → Actions → New repository secret:
-
-| Nama | Nilai |
-|---|---|
-| `SUPABASE_URL` | `https://sjjhmtcnrniyrpldcgdf.supabase.co` |
-| `SUPABASE_KEY` | publishable / anon key (bukan secret key) |
-
-Publishable key memang aman di tempat publik: tabel mentah ditolak RLS,
-hanya RPC `security definer` yang bisa dipanggil.
-
-## Uji manual
-
-Actions → `jaga-supabase` → Run workflow. Berhasil bila langkah terakhir
-mencetak `HTTP 200` beserta JSON tema.
-
-## Kalau terlanjur pause
-
-Dashboard Supabase → project → Restore project. Data tidak hilang.
+Kalau terlanjur pause: Dashboard Supabase -> project -> **Restore project**.
+Data tidak hilang.
